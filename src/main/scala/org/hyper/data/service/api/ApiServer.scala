@@ -1,19 +1,33 @@
 package org.hyper.data.service.api
 
-import io.undertow.Undertow
-import io.undertow.server.{HttpServerExchange, HttpHandler}
-import io.undertow.util.Headers
+import org.json4s.DefaultFormats
+import org.json4s.native.Serialization._
+import unfiltered.netty.cycle
+
+import unfiltered.request._
+import unfiltered.response._
+import unfiltered.directives._
+import unfiltered.directives.Directives._
+import unfiltered.netty._
+
+object UserIntent extends MemDomainModel {
+  implicit val fmt = DefaultFormats
+
+  def intent = Directive.Intent.Path {
+    case Seg(List("api", "users")) =>
+      for {
+        _ <- GET
+//        _ <- Accepts.Json
+      } yield {
+        println("go here")
+        Ok ~> JsonContent ~> ResponseString(write(userRepo.list))
+      }
+  }
+}
 
 object ApiServer {
   def main(args: Array[String]): Unit = {
-    val server = Undertow.builder
-      .addHttpListener(8080, "0.0.0.0")
-      .setHandler(new HttpHandler {
-      override def handleRequest(exchange: HttpServerExchange): Unit = {
-        exchange.getResponseHeaders.put(Headers.CONTENT_TYPE, "text/plain")
-        exchange.getResponseSender.send("Hello World")
-      }
-    }).build()
-    server.start
+    val plan = cycle.Planify(UserIntent.intent)
+    Http(8080).plan(plan).run
   }
 }

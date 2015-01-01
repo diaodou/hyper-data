@@ -8,7 +8,9 @@ scalaVersion := "2.11.4"
 
 libraryDependencies ++= Seq(
   "org.scala-lang" % "scala-library" % scalaVersion.value,
-  "io.undertow" % "undertow-core" % "1.2.0.Beta3",
+  "net.databinder" %% "unfiltered-filter" % "0.8.3",
+  "net.databinder" %% "unfiltered-netty-server" % "0.8.3",
+  "net.databinder" %% "unfiltered-directives" % "0.8.3",
   "org.spire-math" %% "jawn-parser" % "0.7.1",
   "org.json4s" %% "json4s-native" % "3.2.11"
 )
